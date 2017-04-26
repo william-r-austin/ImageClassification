@@ -36,7 +36,7 @@ def load_image(file_path):
     # print(newArr2.shape)
 
 
-def getDataset(testDataSuffixList = [0], predictDataSuffix = [1]):
+def getDataset(testDataSuffixList = [1, 2], predictDataSuffix = [0]):
     baseFolderDir = Constants.BASE_DATASET_FOLDER
     trainingImages = []
     trainingResult = []
@@ -104,3 +104,50 @@ def getDataset(testDataSuffixList = [0], predictDataSuffix = [1]):
 # load_image("C:/imageDownloads/2017-04-14 15-05-00 (Mitsubishi Lancer)/Thumbnails_36_24/0001.jpg")
 
 
+def getDatasetForPrediction(predictDataSuffix = [0]):
+    baseFolderDir = Constants.BASE_DATASET_FOLDER
+    predictImages = []
+    predictResult = []
+    predictFilepaths = []
+
+    subjectFolders = listdir(baseFolderDir)
+
+    for subjectFolder in subjectFolders:
+        fullSubjectFolder = baseFolderDir + subjectFolder
+        if isdir(fullSubjectFolder):
+
+            annotationFilePath = fullSubjectFolder + "/annotation.txt"
+            print("Annotation file = " + annotationFilePath)
+
+            annotationFile = open(annotationFilePath)
+            fileContents = annotationFile.readlines();
+
+            searchTerm = fileContents[0].rstrip()
+            result = int(fileContents[1].rstrip())
+            imageCount = int(fileContents[2].rstrip())
+
+            print("search term = " + str(searchTerm) + ", result = " + str(result) + ", count = " + str(imageCount))
+
+            subjectImageFolder = fullSubjectFolder + "/Thumbnails_36_24/"
+            imageNumber = 1
+
+            while imageNumber <= imageCount:
+                imageFilename = subjectImageFolder + str(imageNumber).zfill(4) + '.jpg'
+                if exists(imageFilename) and isfile(imageFilename):
+                    imageSize = getsize(imageFilename)
+                    if imageSize > 0:
+                        imageArray = load_image(imageFilename)
+                        if imageNumber % 10 in predictDataSuffix:
+                            predictImages.append(imageArray)
+                            predictResult.append(result)
+                            predictFilepaths.append(imageFilename)
+
+                imageNumber += 1
+
+
+    predictSize = len(predictImages)
+    predictSet = (np.asarray(predictImages), np.asarray(predictResult), predictFilepaths)
+
+    print("Loaded all prediction images. Size = " + str(predictSize))
+
+    return predictSet

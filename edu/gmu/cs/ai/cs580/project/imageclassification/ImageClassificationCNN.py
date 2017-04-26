@@ -30,7 +30,7 @@ data_augmentation = True
 # The data, shuffled and split between train and test sets:
 
 # (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-(x_train, y_train), (x_test, y_test) = DatasetLoader.getDataset()
+(x_train, y_train), (x_test, y_test) = DatasetLoader.getDataset(testDataSuffixList = [1, 2], predictDataSuffix = [0])
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
